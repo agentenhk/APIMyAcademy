@@ -1,4 +1,4 @@
-import { validarUsuario, obtenerPermisoModel } from '../modelo/usuarioModelo.js'
+import { validarUsuario, obtenerPermisoModel, crearUsuarioModel, obtenerUsuariosModel,actualizarEstadoUsuario} from '../modelo/usuarioModelo.js'
 
 
 export const login = async (req, res) => {
@@ -77,7 +77,7 @@ export const obtenerPermiso = async (req, res) => {
     try {
         let [respuesta] = await obtenerPermisoModel(idusuarios)
 
-        if (respuesta.cantidad == 0) {
+        if (!respuesta) {
 
             return res.status(404).json({
 
@@ -107,6 +107,112 @@ export const obtenerPermiso = async (req, res) => {
         return res.status(500).json({
             status: 'Error',
             message: 'Ocurrio un error, contacte con el administrador del sistema.',
+            error
+        })
+    }
+
+}
+
+export const crearUsuarios = async (req,res) =>{
+    let parametros = req.body
+
+    let {nombre,apellido,correo_electronico,contrasena,confirmar_contrasena,perfil_idperfil} = parametros;
+
+    if(!nombre || !apellido || !correo_electronico || !contrasena || !confirmar_contrasena || !perfil_idperfil){
+        return res.status(400).json({
+            status: 'succes',
+            message: 'Datos incompletas.'
+        })
+    }
+
+    if(contrasena !== confirmar_contrasena){
+        return res.status(400).json({
+            status: 'error',
+            message: 'No concuerda la contraseña.'
+        })
+    }
+
+    try{
+
+        let respuesta = await crearUsuarioModel(nombre,apellido,correo_electronico,contrasena,perfil_idperfil)
+        if(!respuesta){
+            return res.status(400).json({
+                status: 'Error',
+                message: 'No se creo el usuario.'
+            })
+        }
+
+        return res.status(200).json({
+            status: 'succes',
+            message: 'Usuario creado.'
+        })
+        
+
+    }catch(error){
+        return res.status(500).json({
+            status: 'error',
+            message: 'Error de sistema contacta al administrador.'
+        })
+    }
+
+}
+
+
+export const obtenerUsuarios = async (req,res) =>{
+    try{
+
+        let respuesta = await obtenerUsuariosModel()
+
+        if(!respuesta){
+            return res.status(200).json({
+                status: 'succes',
+                message: 'No hay usuarios.',
+            })
+        }
+
+        return res.status(200).json({
+            status: 'succes',
+            message: 'usuarios encontrados.',
+            usuarios:respuesta
+        })
+
+    }catch(error){
+        return res.status(500).json({
+            status: 'Error',
+            message: 'Ocurrio un error, contacte con el administrador del sistema.'
+        })
+    }
+}
+
+export const actualizarEstado = async (req,res) =>{
+    let parametros = req.body;
+    let {id,estado} = parametros;
+    if(!id || !estado){
+        return res.status(400).json({
+            status: 'Error',
+            message: 'Datos incompletos..',
+        })
+    }
+
+    try{
+        let respuesta = await actualizarEstadoUsuario(id,estado)
+        
+        if(respuesta > 0){
+            return res.status(200).json({
+                status: 'succes',
+                message: 'Usuario actualizado..',
+            })
+        }
+        return res.status(400).json({
+            status: 'error',
+            message: 'Usuario no actualizado..',
+        })
+
+
+    }catch(error){
+        return res.status(500).json({
+            status: 'error',
+            message: 'Contacta al administrador..',
             error
         })
     }
