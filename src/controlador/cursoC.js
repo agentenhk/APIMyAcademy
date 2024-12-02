@@ -57,7 +57,7 @@ export const obtenerCursos = async (req,res) =>{
         return res.status(200).json({
             status: 'succes',
             message: 'cursos encontrados.',
-            usuarios:respuesta
+            cursos:respuesta
         })
 
     }catch(error){

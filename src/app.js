@@ -2,6 +2,7 @@ import  express  from "express";
 import usuarioRuta from './rutas/usuarioRutas.js'
 import rolesRutas from './rutas/rolesRutas.js'
 import cursoRuta from './rutas/cursoRutas.js'
+import asignacionesRuta from './rutas/asignacionesRutas.js'
 import cors from "cors"; 
 
 // Mensaje de bienvenida
@@ -24,6 +25,7 @@ app.use(express.urlencoded({extended:true}));
 app.use('/api',usuarioRuta)
 app.use('/api',rolesRutas)
 app.use('/api',cursoRuta)
+app.use('/api',asignacionesRuta)
 
 app.use((req,res,next) =>{
     res.status(404).json({
