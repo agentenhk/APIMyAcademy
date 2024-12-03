@@ -112,3 +112,30 @@ export const actualizarDatosCalifi = async (
 };
 
 
+export const obtenerAsignaturasYNotasPorEstudiante = async (idusuarios) => {
+    const query = `
+        SELECT 
+            c.id,
+            a.id AS id_asignatura,
+            a.nombre_asignatura,
+            IFNULL(c.primer_periodo, 0) AS primer_periodo,
+            IFNULL(c.segundo_periodo, 0) AS segundo_periodo,
+            IFNULL(c.tercer_periodo, 0) AS tercer_periodo,
+            IFNULL(c.cuarto_periodo, 0) AS cuarto_periodo,
+            IFNULL(c.nota_final, 0) AS nota_final
+        FROM 
+            calificaciones c
+        INNER JOIN 
+            asignatura a ON c.id_asignatura = a.id
+        WHERE 
+            c.id_estudiante = ?;
+    `;
+    try {
+        const [resultado] = await pool.query(query, [idusuarios]);
+        return resultado;
+    } catch (error) {
+        console.error('Error al obtener asignaturas y notas:', error);
+        throw error; // Maneja el error según tu lógica
+    }
+};
+

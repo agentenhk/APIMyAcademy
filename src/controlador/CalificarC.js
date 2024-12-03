@@ -1,4 +1,4 @@
-import {obtenerEstudiantesPorProfesorModel,obtenerCursosPorProfesorModel,crearCalificacionModel,actualizarDatosCalifi} from '../modelo/calificarModelo.js'
+import {obtenerEstudiantesPorProfesorModel,obtenerCursosPorProfesorModel,crearCalificacionModel,actualizarDatosCalifi,obtenerAsignaturasYNotasPorEstudiante} from '../modelo/calificarModelo.js'
 
 
 
@@ -65,15 +65,8 @@ export const crearCalificacion = async (req,res) =>{
         tercer_periodo,
         cuarto_periodo,
         nota_final} = parametros;
-
-    if(!id_estudiante || !id_curso || !id_asignatura || !id_profesor || !id_periodo || !primer_periodo || !segundo_periodo || !tercer_periodo || !cuarto_periodo || !nota_final){
-        return res.status(400).json({
-            status: 'succes',
-            message: 'Datos incompletas.'
-        })
-    }
-
-
+        console.log(parametros)
+    
     try{
 
         let respuesta = await crearCalificacionModel(id_estudiante,
@@ -163,3 +156,28 @@ export const actualizarCalificacion = async (req,res) =>{
     }
 
 }
+
+export const obtenerNotasPorEstudiante = async (req, res) => {
+    try {
+        const { idusuarios } = req.params;
+
+        if (!idusuarios) {
+            return res.status(400).json({ error: 'El ID del estudiante es obligatorio.' });
+        }
+
+        const notas = await obtenerAsignaturasYNotasPorEstudiante(idusuarios);
+
+        if (!notas.length) {
+            return res.status(404).json({ mensaje: 'No se encontraron notas para este estudiante.' });
+        }
+
+        return res.status(200).json({
+            status: 'succes',
+            message: 'Notas encontradas.',
+            notas
+        })
+    } catch (error) {
+        console.error('Error al obtener estudiantes:', error);
+        res.status(500).json({ error: 'Error interno del servidor.' });
+    }
+};
