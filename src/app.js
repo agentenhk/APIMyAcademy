@@ -3,6 +3,9 @@ import usuarioRuta from './rutas/usuarioRutas.js'
 import rolesRutas from './rutas/rolesRutas.js'
 import cursoRuta from './rutas/cursoRutas.js'
 import asignacionesRuta from './rutas/asignacionesRutas.js'
+import asignaturaRuta from './rutas/asignaturaRutas.js'
+import calificaRuta from './rutas/calificarRutas.js'
+import perdoRuta from './rutas/periodoRuta.js'
 import cors from "cors"; 
 
 // Mensaje de bienvenida
@@ -26,6 +29,10 @@ app.use('/api',usuarioRuta)
 app.use('/api',rolesRutas)
 app.use('/api',cursoRuta)
 app.use('/api',asignacionesRuta)
+app.use('/api',asignaturaRuta)
+app.use('/api',calificaRuta)
+app.use('/api',perdoRuta)
+
 
 app.use((req,res,next) =>{
     res.status(404).json({

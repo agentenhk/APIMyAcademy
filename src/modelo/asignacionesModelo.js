@@ -53,6 +53,7 @@ export const actualizarEstadoAsignacion = async (id, estado) => {
     }
 };
 
+
 export const obtenerAsignacionesCursoEstu = async () => {
     const query = `
         SELECT 
@@ -88,3 +89,57 @@ export const crearAsignacionModelCursoEstu = async (id_usuario,id_curso)=>{
     const [result] = await pool.query(query, [id_usuario,id_curso]);
     return { id: result.insertId, message: 'Asignacion creada exitosamente' };
 }
+
+
+export const crearAsignacionModelProfesorAsig = async (id_asignatura,id_usuario)=>{
+    const query = `
+            INSERT INTO usuarios_asignatura (id_asignatura,id_usuario)
+            VALUES (?, ?)
+        `;
+    const [result] = await pool.query(query, [id_asignatura,id_usuario]);
+    return { id: result.insertId, message: 'Asignacion creada exitosamente' };
+}
+
+
+export const actualizarEstadoAsignacionAsigPro = async (id, estado) => {
+    const query = `
+        UPDATE usuarios_asignatura
+        SET estado = ?
+        WHERE id = ?
+    `;
+    try {
+        const [resultado] = await pool.query(query, [estado, id]);
+        return resultado.affectedRows
+    } catch (error) {
+        console.error("Error al actualizar el estado del usuario:", error);
+        return { success: false, message: "Ocurrió un error al intentar actualizar el estado." };
+    }
+};
+
+
+export const obtenerAsignacionesAsignaProfe = async () => {
+    const query = `
+        SELECT 
+            us.id,
+            u.nombre AS profesor_nombre,
+            a.nombre_asignatura AS asignatura_nombre,
+            CASE 
+            WHEN us.estado = 1 THEN 'Activo' 
+            WHEN us.estado = 2 THEN 'Inactivo' 
+            ELSE 'Desconocido' -- Para manejar posibles valores no esperados
+        END AS estado -- Renombrar el estado según el valor
+        FROM 
+            usuarios_asignatura us
+        JOIN 
+            usuarios u ON us.id_usuario = u.idusuarios 
+        JOIN 
+            asignatura a ON us.id_asignatura  = a.id
+    `;
+    try {
+        const [respuesta] = await pool.query(query);
+        return respuesta;
+    } catch (error) {
+        console.error("Error al obtener asignaciones:", error);
+        throw error;
+    }
+};
